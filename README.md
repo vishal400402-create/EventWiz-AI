@@ -7,7 +7,8 @@ Consent-first event messaging software for weddings, birthdays, college events, 
 ```powershell
 Copy-Item .env.example .env
 npm install
-npm run seed
+npm run db:migrate
+npm run seed # optional; demo mode only and non-destructive
 npm run dev
 ```
 
@@ -31,9 +32,11 @@ In Meta's WhatsApp configuration, set the callback URL to `https://YOUR-DOMAIN/a
 
 To test an approved template safely, choose one consenting number you control, create a campaign with its approved template name and parameters, review the eligible/skipped counts, and click the explicit confirmation control. In live mode the server refuses non-consenting, suppressed, duplicate, or unverified recipients. Templates must already be approved in Meta.
 
-## Data practices and troubleshooting
+## PostgreSQL migration and data practices
 
-Back up the SQLite file specified by `DATABASE_PATH` while the app is stopped. Retain messages only as long as operationally needed, export/delete an organizer's data on request, and never copy the database or `.env` into source control. Demo data can be reset with `npm run seed` after removing only the app database file.
+EventWiz now requires `DATABASE_URL`, using a Neon PostgreSQL connection string in local `.env`. Run `npm run db:migrate` explicitly once against the intended database before starting the server. Migrations are never run on startup, and the app never imports, deletes, or overwrites any existing SQLite database file. There is no automatic SQLite-to-PostgreSQL data copy: take a backup and perform a reviewed, one-time export/import before retiring legacy local data.
+
+`npm run seed` is deliberately restricted to `APP_MODE=demo`, uses `ON CONFLICT DO NOTHING`, and is never part of migration or startup. Do not run it against a production database. Retain messages only as long as operationally needed, export/delete an organizer's data on request, and never copy the database URL or `.env` into source control. Image upload is intentionally disabled for the first public launch; use managed object storage before enabling it.
 
 If `npm install` fails, confirm Node 20+ and network access. If live verification fails, check the token, phone number ID, Graph version, and that the token has WhatsApp permissions. Webhook failures usually mean a mismatched verify token, callback URL, or app secret.
 
@@ -43,4 +46,4 @@ The dashboard supports event CRUD/archive, event-scoped guests, consent/suppress
 
 ## Known limits
 
-This initial local implementation uses SQLite directly (not a hosted multi-node job runner). For a production deployment, add a durable queue/worker, a managed database with encrypted backups, email/password verification and password-reset flows, a full Meta template sync workflow, and legal review for the organizer's jurisdictions.
+Before production, configure the Neon `DATABASE_URL`, run the reviewed migration, set a production `WEB_ORIGIN`, serve the app over HTTPS, and test sign-up/login with a non-production account. Remaining launch work includes email verification and password resets, a durable queue/worker, managed object storage for service images, a full Meta template sync workflow, and jurisdictional legal review.

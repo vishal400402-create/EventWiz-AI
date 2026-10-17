@@ -2,28 +2,4 @@ let csrf = localStorage.getItem('ew_csrf') || '';
 export type ApiError = {error?:{message?:string}};
 export async function api<T>(path:string, options:RequestInit={}) : Promise<T> { const r=await fetch(path,{...options,credentials:'include',headers:{'Content-Type':'application/json',...(options.method&&options.method!=='GET'?{'x-csrf-token':csrf}:{}),...(options.headers||{})}}); const body=await r.json().catch(()=>({})); if(!r.ok) throw new Error((body as ApiError).error?.message||'Request failed'); return body as T; }
 export async function login(email:string,password:string){const r=await api<{user:{name:string};csrfToken:string}>('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});csrf=r.csrfToken;localStorage.setItem('ew_csrf',csrf);return r;}
-
-export async function uploadImages<T>(path: string, files: File[]): Promise<T> {
-  const form = new FormData();
-
-  files.forEach((file) => form.append('images', file));
-
-  const r = await fetch(path, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'x-csrf-token': csrf,
-    },
-    body: form,
-  });
-
-  const body = await r.json().catch(() => ({}));
-
-  if (!r.ok) {
-    throw new Error(
-      (body as ApiError).error?.message || 'Image upload failed'
-    );
-  }
-
-  return body as T;
-}
+export async function signup(name:string,email:string,password:string){const r=await api<{user:{name:string};csrfToken:string}>('/api/auth/signup',{method:'POST',body:JSON.stringify({name,email,password})});csrf=r.csrfToken;localStorage.setItem('ew_csrf',csrf);return r;}

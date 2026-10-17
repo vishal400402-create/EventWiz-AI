@@ -1,12 +1,14 @@
-import 'dotenv/config';
 import path from 'node:path';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') });
+import 'dotenv/config';
 
 export const config = {
   port: Number(process.env.PORT || 8787),
   webOrigin: process.env.WEB_ORIGIN || 'http://localhost:5173',
   mode: process.env.APP_MODE === 'live' ? 'live' : 'demo',
-  dbPath: process.env.DATABASE_PATH || path.resolve('data/eventwiz.db'),
-  sessionSecret: process.env.SESSION_SECRET || 'demo-only-change-me',
+  databaseUrl: process.env.DATABASE_URL || '',
   openAiKey: process.env.OPENAI_API_KEY || '',
   openAiModel: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
   whatsapp: {

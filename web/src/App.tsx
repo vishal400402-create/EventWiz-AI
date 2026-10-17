@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CalendarDays, CheckCircle2, ChevronRight, CircleAlert, ClipboardList, LayoutDashboard, Mail, MessageCircle, Send, Settings, Sparkles, Users, X, Package, Plus, Trash2, Upload, Pencil, Eye, EyeOff } from 'lucide-react';
-import { api, login, uploadImages } from './api';
+import { CalendarDays, CalendarCheck, CheckCircle2, ChevronRight, CircleAlert, ClipboardList, LayoutDashboard, Mail, MessageCircle, Send, Settings, Sparkles, Users, X, Package, Plus, Trash2, Upload, Pencil, Eye, EyeOff } from 'lucide-react';
+import { api, login, signup } from './api';
 import Marketplace from './Marketplace';
 
 type Event = {id:string;name:string;type:string;venue:string;start_at:string;timezone:string;archived:number}; type Guest={id:string;name:string;phone:string;rsvp:string;consent:number;suppressed:number;event_id:string};
@@ -11,6 +11,7 @@ const nav: [string, typeof LayoutDashboard][] = [
   ['Events', CalendarDays],
   ['Guests', Users],
   ['Services', Package],
+  ['Bookings', CalendarCheck],
   ['Campaigns', Send],
   ['AI Studio', Sparkles],
   ['Inbox', MessageCircle],
@@ -22,18 +23,123 @@ const humanDate=(v:string,tz?:string)=>new Intl.DateTimeFormat('en-IN',{dateStyl
 
 export default function App(){
  const [me,setMe]=useState<{name:string}|null>(null),[page,setPage]=useState('Overview'),[events,setEvents]=useState<Event[]>([]),[guests,setGuests]=useState<Guest[]>([]),[messages,setMessages]=useState<any[]>([]),[mode,setMode]=useState<any>(null),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
- const load=async()=>{try{const [e,g,m,mo]=await Promise.all([api<{items:Event[]}>('/api/events'),api<{items:Guest[]}>('/api/guests'),api<{items:any[]}>('/api/messages'),api('/api/mode')]);setEvents(e.items);setGuests(g.items);setMessages(m.items);setMode(mo)}catch{setMe(null)}};
+ const [bookings, setBookings] = useState<any[]>([]);
+ const load = async () => {
+  try {
+    const [e, g, m, mo, b] = await Promise.all([
+      api<{ items: Event[] }>('/api/events'),
+      api<{ items: Guest[] }>('/api/guests'),
+      api<{ items: any[] }>('/api/messages'),
+      api('/api/mode'),
+      api<{ items: any[] }>('/api/bookings')
+    ]);
+
+    setEvents(e.items);
+    setGuests(g.items);
+    setMessages(m.items);
+    setMode(mo);
+    setBookings(b.items);
+  } catch {
+    setMe(null);
+  }
+};
  useEffect(()=>{api<{user:{name:string}}>('/api/auth/me').then(r=>{setMe(r.user);load()}).catch(()=>setMe(null))},[]);
  const toast=(text:string)=>{setNotice(text);setTimeout(()=>setNotice(''),3500)};
  if (window.location.pathname === '/marketplace') {
   return <Marketplace />;
 }
- if(!me)return <Login onLogin={async(e,p)=>{setBusy(true);try{const r=await login(e,p);setMe(r.user);await load()}catch(err){toast(err instanceof Error?err.message:'Sign in failed')}finally{setBusy(false)}}} busy={busy} notice={notice}/>;
+ if(!me)return <Login onLogin={async(e,p)=>{setBusy(true);try{const r=await login(e,p);setMe(r.user);await load()}catch(err){toast(err instanceof Error?err.message:'Sign in failed')}finally{setBusy(false)}}} onSignup={async(n,e,p)=>{setBusy(true);try{const r=await signup(n,e,p);setMe(r.user);await load()}catch(err){toast(err instanceof Error?err.message:'Sign up failed')}finally{setBusy(false)}}} busy={busy} notice={notice}/>;
  return <div className="shell"><aside><div className="brand"><span className="brandmark">✦</span><span>EventWiz <b>AI</b></span></div><div className="workspace"><span className="avatar">AS</span><div><b>{me.name}</b><small>Organizer workspace</small></div></div><nav>{nav.map(([name,Icon])=><button key={name} className={page===name?'active':''} onClick={()=>setPage(name as string)}><Icon size={18}/>{name}</button>)}</nav><div className="safety"><CheckCircle2 size={18}/><span><b>Consent-first</b><small>Every send is checked</small></span></div></aside><main><header><div><p className="eyebrow">EVENT OPERATIONS</p><h1>{page}</h1></div><div className="header-actions"><span className={'mode '+(mode?.mode==='live'?'live':'demo')}>{mode?.mode==='live'?'LIVE MODE':'DEMO MODE'}</span><button className="primary" onClick={()=>setPage('Events')}><CalendarDays size={17}/> New event</button></div></header>{mode?.mode==='demo'&&<div className="demo-banner"><CircleAlert size={18}/><span><b>Demo mode:</b> delivery updates and AI fallback copy are simulated. No WhatsApp message will be sent.</span></div>}
- {page==='Overview'&&<Overview events={events} guests={guests} messages={messages} go={setPage}/>} {page==='Events'&&<EventsPage events={events} refresh={load} toast={toast}/>} {page==='Guests'&&<GuestsPage events={events} guests={guests} refresh={load} toast={toast}/>} {page==='Services'&&<ServicesPage toast={toast}/>} {page==='Campaigns'&&<Campaigns events={events} toast={toast}/>} {page==='AI Studio'&&<Studio events={events} toast={toast}/>} {page==='Inbox'&&<Inbox messages={messages}/>} {page==='Templates'&&<Templates toast={toast}/>} {page==='Settings'&&<SettingsPage toast={toast}/>}
+ {page==='Overview'&&<Overview events={events} guests={guests} messages={messages} go={setPage}/>} {page==='Events'&&<EventsPage events={events} refresh={load} toast={toast}/>} {page==='Guests'&&<GuestsPage events={events} guests={guests} refresh={load} toast={toast}/>} {page==='Services'&&<ServicesPage toast={toast}/>} {page === 'Bookings' && (
+  <BookingsPage bookings={bookings} refresh={load} toast={toast} />
+)} {page==='Campaigns'&&<Campaigns events={events} toast={toast}/>} {page==='AI Studio'&&<Studio events={events} toast={toast}/>} {page==='Inbox'&&<Inbox messages={messages}/>} {page==='Templates'&&<Templates toast={toast}/>} {page==='Settings'&&<SettingsPage toast={toast}/>}
  </main>{notice&&<div className="toast"><CheckCircle2 size={18}/>{notice}</div>}</div>
 }
-function Login({onLogin,busy,notice}:{onLogin:(e:string,p:string)=>void;busy:boolean;notice:string}){const [email,setEmail]=useState('demo@eventwiz.local'),[password,setPassword]=useState('DemoPass123!');return <div className="login"><div className="login-card"><div className="brand"><span className="brandmark">✦</span>EventWiz <b>AI</b></div><h1>Welcome back</h1><p>Sign in to coordinate memorable events.</p><label>Email<input value={email} onChange={e=>setEmail(e.target.value)} /></label><label>Password<input type="password" value={password} onChange={e=>setPassword(e.target.value)} /></label>{notice&&<p className="error">{notice}</p>}<button className="primary wide" disabled={busy} onClick={()=>onLogin(email,password)}>{busy?'Signing in…':'Sign in'}</button><small>Demo account is prefilled. Demo sends are always simulated.</small></div></div>}
+
+
+function BookingsPage({
+  bookings,
+  refresh,
+  toast,
+}: {
+  bookings: any[];
+  refresh: () => Promise<void>;
+  toast: (message: string) => void;
+}) {
+  const updateStatus = async (id: string, status: 'Confirmed' | 'Rejected') => {
+    try {
+      await api(`/api/bookings/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      await refresh();
+      toast(`Booking ${status.toLowerCase()}.`);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Could not update booking.');
+    }
+  };
+
+  return (
+    <section className="panel table-wrap">
+      <div className="panelhead">
+        <h3>Customer booking requests</h3>
+        <span>{bookings.length} bookings</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Service</th>
+            <th>Event date</th>
+            <th>Guests</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bookings.map((b) => (
+            <tr key={b.id}>
+              <td>
+                <b>{b.customerName}</b>
+                <small>{b.phone}</small>
+                <small>{b.reference}</small>
+              </td>
+              <td>{b.serviceName}</td>
+              <td>{b.preferredDate}</td>
+              <td>{b.guestCount}</td>
+              <td><span className="pill">{b.status}</span></td>
+              <td>
+                <button
+                  className="primary"
+                  disabled={b.status === 'Confirmed'}
+                  onClick={() => updateStatus(b.id, 'Confirmed')}
+                >
+                  Confirm
+                </button>
+                {' '}
+                <button
+                  className="link"
+                  disabled={b.status === 'Rejected'}
+                  onClick={() => updateStatus(b.id, 'Rejected')}
+                >
+                  Reject
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {bookings.length === 0 && (
+        <Empty text="No bookings yet. Customer requests will appear here." />
+      )}
+    </section>
+  );
+}
+
+
+function Login({onLogin,onSignup,busy,notice}:{onLogin:(e:string,p:string)=>void;onSignup:(n:string,e:string,p:string)=>void;busy:boolean;notice:string}){const [email,setEmail]=useState('demo@eventwiz.local'),[password,setPassword]=useState('DemoPass123!'),[name,setName]=useState(''),[register,setRegister]=useState(false);return <div className="login"><div className="login-card"><div className="brand"><span className="brandmark">✦</span>EventWiz <b>AI</b></div><h1>{register?'Create your account':'Welcome back'}</h1><p>{register?'Use a 12+ character password with upper/lowercase letters, a number, and a symbol.':'Sign in to coordinate memorable events.'}</p>{register&&<label>Name<input value={name} onChange={e=>setName(e.target.value)} /></label>}<label>Email<input value={email} onChange={e=>setEmail(e.target.value)} /></label><label>Password<input type="password" value={password} onChange={e=>setPassword(e.target.value)} /></label>{notice&&<p className="error">{notice}</p>}<button className="primary wide" disabled={busy} onClick={()=>register?onSignup(name,email,password):onLogin(email,password)}>{busy?(register?'Creating…':'Signing in…'):(register?'Create account':'Sign in')}</button><button className="link wide" disabled={busy} onClick={()=>setRegister(!register)}>{register?'Already have an account? Sign in':'New here? Create an account'}</button>{!register&&<small>Demo account is prefilled. Demo sends are always simulated.</small>}</div></div>}
 function Overview({events,guests,messages,go}:{events:Event[];guests:Guest[];messages:any[];go:(x:string)=>void}){const consented=guests.filter(x=>x.consent&&!x.suppressed).length;return <><section className="hero"><div><p className="eyebrow">GOOD AFTERNOON</p><h2>Make every guest feel expected.</h2><p>Organize events, keep consent in view, and send thoughtful updates with confidence.</p><button className="primary" onClick={()=>go('AI Studio')}><Sparkles size={17}/> Create a message</button></div><div className="hero-orb">✦</div></section><section className="cards"><Metric icon={<CalendarDays/>} value={events.filter(x=>!x.archived).length} label="Active events"/><Metric icon={<Users/>} value={guests.length} label="Guests"/><Metric icon={<CheckCircle2/>} value={consented} label="Eligible contacts"/><Metric icon={<MessageCircle/>} value={messages.length} label="Message records"/></section><section className="two-col"><Panel title="Upcoming events" action="Manage events" onAction={()=>go('Events')}>{events.filter(x=>!x.archived).slice(0,4).map(e=><div className="row" key={e.id}><span className="cal"><b>{new Date(e.start_at).getDate()}</b>{new Intl.DateTimeFormat('en',{month:'short'}).format(new Date(e.start_at))}</span><div><b>{e.name}</b><small>{e.type} · {e.venue||'Venue TBD'}</small></div><ChevronRight/></div>)||<Empty text="Create your first event to get started."/>}</Panel><Panel title="Consent & delivery" action="View guests" onAction={()=>go('Guests')}><div className="status-list"><p><span>Recorded consent</span><b>{consented} guests</b></p><p><span>Consent needed</span><b>{guests.filter(x=>!x.consent).length} guests</b></p><p><span>Suppressed contacts</span><b>{guests.filter(x=>x.suppressed).length} guests</b></p><p><span>Recent simulated deliveries</span><b>{messages.filter(x=>x.simulated).length}</b></p></div></Panel></section></>}
 function Metric({icon,value,label}:{icon:any;value:number;label:string}){return <div className="metric"><span>{icon}</span><b>{value}</b><small>{label}</small></div>}; function Panel({title,action,onAction,children}:{title:string;action:string;onAction:()=>void;children:any}){return <section className="panel"><div className="panelhead"><h3>{title}</h3><button className="link" onClick={onAction}>{action}</button></div>{children}</section>}; function Empty({text}:{text:string}){return <div className="empty">{text}</div>}
 function EventsPage({events,refresh,toast}:{events:Event[];refresh:()=>Promise<void>;toast:(x:string)=>void}){const [open,setOpen]=useState(false);const [name,setName]=useState('');const [type,setType]=useState('Wedding');const [venue,setVenue]=useState('');const [start,setStart]=useState('2026-11-20T18:00');const create=async()=>{try{await api('/api/events',{method:'POST',body:JSON.stringify({name,type,description:'',venue,map_url:'',start_at:new Date(start).toISOString(),end_at:new Date(new Date(start).getTime()+3*36e5).toISOString(),timezone:'Asia/Kolkata',registration_url:'',dress_code:'',parking:'',organizer_contact:''})});setOpen(false);await refresh();toast('Event created. Add its guests and consent records next.')}catch(e){toast(e instanceof Error?e.message:'Could not create event')}};return <><section className="page-top"><div><h2>Your events</h2><p>All event dates are stored in UTC with their selected event timezone.</p></div><button className="primary" onClick={()=>setOpen(true)}>+ New event</button></section><section className="list panel">{events.map(e=><div className="event-card" key={e.id}><span className="event-icon"><CalendarDays/></span><div><b>{e.name}</b><p>{e.type} · {humanDate(e.start_at,e.timezone)} · {e.venue||'Venue TBD'}</p></div>{e.archived?<span className="pill">Archived</span>:<button className="link" onClick={async()=>{await api(`/api/events/${e.id}/archive`,{method:'POST'});await refresh();toast('Event archived.')}}>Archive</button>}</div>)}</section>{open&&<Modal title="Create event" close={()=>setOpen(false)}><label>Event name<input autoFocus value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Product Summit 2026"/></label><label>Event type<select value={type} onChange={e=>setType(e.target.value)}>{['Wedding','Birthday','College','Seminar','Conference','Corporate','Other'].map(x=><option>{x}</option>)}</select></label><label>Venue<input value={venue} onChange={e=>setVenue(e.target.value)} placeholder="Venue name"/></label><label>Starts at<input type="datetime-local" value={start} onChange={e=>setStart(e.target.value)}/></label><button className="primary wide" onClick={create}>Create event</button></Modal>}</>}
@@ -85,7 +191,6 @@ function ServicesPage({ toast }: { toast: (x: string) => void }) {
   const [availability, setAvailability] = useState('Available');
   const [location, setLocation] = useState('');
   const [published, setPublished] = useState(true);
-  const [files, setFiles] = useState<File[]>([]);
 
   const load = async () => {
     setLoading(true);
@@ -114,7 +219,6 @@ function ServicesPage({ toast }: { toast: (x: string) => void }) {
     setAvailability('Available');
     setLocation('');
     setPublished(true);
-    setFiles([]);
   };
 
   const edit = (s: Service) => {
@@ -127,7 +231,6 @@ function ServicesPage({ toast }: { toast: (x: string) => void }) {
     setAvailability(s.availability || 'Available');
     setLocation(s.location || '');
     setPublished(Boolean(s.published));
-    setFiles([]);
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -168,10 +271,6 @@ function ServicesPage({ toast }: { toast: (x: string) => void }) {
       );
 
       const serviceId = editing || result.item?.id || result.id;
-
-      if (files.length > 0 && serviceId) {
-        await uploadImages(`/api/services/${serviceId}/images`, files);
-      }
 
       reset();
       await load();
@@ -216,7 +315,7 @@ function ServicesPage({ toast }: { toast: (x: string) => void }) {
       <section className="page-top">
         <div>
           <h2>Services Catalog</h2>
-          <p>Apni event services, prices, photos aur availability manage karo.</p>
+          <p>Apni event services, prices aur availability manage karo. Image uploads launch ke baad enable honge.</p>
         </div>
         <span className="pill">{items.length} services</span>
       </section>
@@ -309,19 +408,6 @@ function ServicesPage({ toast }: { toast: (x: string) => void }) {
             onChange={e => setDescription(e.target.value)}
             placeholder="Service mein kya included hai?"
           />
-        </label>
-
-        <label>
-          Service images (maximum 8)
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={e =>
-              setFiles(Array.from(e.target.files || []).slice(0, 8))
-            }
-          />
-          <small>{files.length} new image(s) selected</small>
         </label>
 
         <label className="check">
