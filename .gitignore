@@ -1,0 +1,43 @@
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+web/dist/
+server/dist/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Database files
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+*.log.*
+
+# Uploaded files
+uploads/
+server/uploads/
+
+# Test coverage
+coverage/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Local application data
+server/data/
+
+# Local backup source files
+server/src/index-backup.ts
+
+server/src/index.ts.backup

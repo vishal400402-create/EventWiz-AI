@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+:root{font-family:'DM Sans',sans-serif;color:#20282b;background:#f7f8f5}*{box-sizing:border-box}body{margin:0}.shell{min-height:100vh;display:flex}aside{width:258px;background:#123c3b;color:#eaf4ef;padding:25px 15px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0}.brand{font-size:21px;font-weight:600;display:flex;gap:8px;align-items:center;letter-spacing:-.7px}.brand b{color:#e8b45b}.brandmark{display:grid;place-items:center;color:#163d3c;background:#edb95e;width:31px;height:31px;border-radius:10px}.workspace{display:flex;gap:10px;margin:38px 8px 25px;align-items:center}.workspace small,aside small{display:block;color:#a7c8bf;font-size:11px;margin-top:3px}.avatar{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#cc9155;color:#fff;font-size:11px}nav{display:grid;gap:4px}nav button{border:0;background:none;color:#b8d2ca;padding:11px 12px;border-radius:9px;display:flex;gap:12px;align-items:center;font:inherit;text-align:left;cursor:pointer}nav button.active,nav button:hover{background:#285553;color:#fff}.safety{margin-top:auto;background:#1d4b49;border:1px solid #376966;padding:12px;border-radius:10px;display:flex;gap:10px;color:#d9ebe4}.safety small{color:#92b8ad}main{margin-left:258px;min-width:0;width:calc(100% - 258px);padding:38px 48px 70px;max-width:1500px}header,.page-top,.panelhead,.header-actions,.inline-form,.campaign{display:flex;align-items:center;justify-content:space-between;gap:16px}h1,h2,h3,p{margin-top:0}h1{font:700 30px 'Playfair Display',serif;margin-bottom:0}.page-top h2,.settings-grid h2{font:700 25px 'Playfair Display',serif;margin-bottom:6px}.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#73857f;margin-bottom:8px}.header-actions{align-self:flex-start}.primary,.secondary,.danger-btn{border:0;border-radius:8px;padding:10px 14px;font:600 13px inherit;cursor:pointer;display:inline-flex;gap:8px;align-items:center;justify-content:center}.primary{background:#163f3d;color:#fff}.primary:hover{background:#0d302f}.secondary{background:#e5ece7;color:#244342}.danger-btn{background:#b94c4c;color:white}.wide{width:100%;margin-top:10px}.mode,.pill{font-size:11px;font-weight:700;padding:6px 9px;border-radius:99px}.mode.demo{background:#f5e5bd;color:#845d14}.mode.live{background:#d6eee0;color:#17613a}.demo-banner{margin:26px 0;background:#fff5d9;border:1px solid #f2dcaa;border-radius:10px;padding:12px 15px;display:flex;gap:10px;color:#71521b;font-size:13px}.hero{margin:28px 0;min-height:210px;overflow:hidden;padding:34px 42px;border-radius:16px;background:#dfeae1;display:flex;justify-content:space-between;position:relative}.hero h2{font:700 33px 'Playfair Display',serif;margin-bottom:10px}.hero p:not(.eyebrow){color:#53635d;max-width:560px;margin-bottom:20px}.hero-orb{font-size:120px;line-height:1;color:#e6b55b;transform:rotate(15deg);margin-right:8%}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}.metric,.panel{background:#fff;border:1px solid #e5e9e5;border-radius:13px;padding:19px}.metric span{display:block;color:#1e6864;margin-bottom:19px}.metric b{font-size:28px;display:block;letter-spacing:-1px}.metric small,.row small,.event-card p,.campaign small,.message small,td small{display:block;color:#76817d;font-size:12px;margin-top:3px}.two-col,.studio,.settings-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}.panelhead{margin-bottom:18px}.panel h3{margin:0;font-size:15px}.link{border:0;background:none;color:#17716b;font:600 12px inherit;cursor:pointer;padding:0}.row{padding:12px 0;border-top:1px solid #edf0ed;display:flex;align-items:center;gap:12px}.row svg:last-child{margin-left:auto;color:#9ca7a3}.cal{background:#f2f4ef;border-radius:8px;width:42px;height:42px;display:grid;place-content:center;text-align:center;font-size:10px;color:#60706a}.cal b{font-size:15px;color:#24302d}.status-list p{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid #edf0ed;margin:0;font-size:13px}.status-list span{color:#65736d}.list{padding:0}.event-card,.campaign,.message{padding:17px 4px;border-top:1px solid #edf0ed;display:flex;align-items:center;gap:13px}.event-card:first-child,.campaign:first-child,.message:first-child{border-top:0}.event-card>div{flex:1}.event-icon,.message-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:10px;background:#e3efeb;color:#176764}.event-card p,.message p{margin:4px 0}.empty{color:#89938f;text-align:center;padding:30px 10px;font-size:13px}.table-wrap{padding:0;overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;padding:14px 20px;color:#71807a;font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:#f8faf7}td{padding:15px 20px;border-top:1px solid #edf0ed}.good{color:#167243;font-weight:700;font-size:12px}.danger{color:#b34343;font-weight:700;font-size:12px}.muted{color:#7a8781;font-size:12px}.check{display:flex;gap:8px;align-items:center}.check input{width:auto}.inline-form{align-items:center;margin-bottom:20px}.campaign>div:first-child,.message>div{flex:1}.preview{font-size:12px;color:#66746d;margin:8px 0 0}.campaign .primary,.campaign .secondary{margin-left:7px}.studio-controls label,.modal label,.login label{display:block;margin:15px 0;font-size:12px;font-weight:700;color:#56635d}input,select,textarea{width:100%;margin-top:6px;border:1px solid #dbe2dc;background:#fff;border-radius:7px;padding:10px;font:14px inherit;color:#20302a}textarea{min-height:220px;line-height:1.55;resize:vertical}.message-preview{min-height:430px}.settings-grid{grid-template-columns:1fr 1fr}.settings-grid .full{grid-column:1/-1}.connection{margin-top:18px;padding:12px;border-radius:8px;font-size:13px}.connection p{margin:4px 0 0}.connection.yes{background:#e3f1e8;color:#17633b}.connection.no{background:#fdf0e9;color:#9a4935}.settings-grid li{margin:9px 0;font-size:13px;color:#52615b}code{background:#edf1ed;padding:2px 4px;border-radius:4px}.modalback{position:fixed;inset:0;background:#102a2988;display:grid;place-items:center;padding:20px;z-index:4}.modal{background:#fff;padding:24px;border-radius:14px;width:min(470px,100%);box-shadow:0 20px 80px #001b1955}.iconbutton{border:0;background:#edf1ed;border-radius:6px;padding:5px;display:flex}.toast{position:fixed;right:25px;bottom:25px;background:#173f3d;color:#fff;padding:13px 16px;border-radius:9px;display:flex;gap:9px;align-items:center;font-size:13px;box-shadow:0 8px 24px #0003}.login{min-height:100vh;background:linear-gradient(125deg,#e9f0e9,#cde1d8);display:grid;place-items:center;padding:20px}.login-card{width:min(420px,100%);background:white;padding:38px;border-radius:16px;box-shadow:0 18px 70px #173f3d28}.login-card h1{font:700 28px 'Playfair Display',serif;margin:30px 0 7px}.login-card>p{color:#708078;font-size:13px}.login-card>small{display:block;color:#7b8882;text-align:center;margin-top:16px;font-size:11px}.error{color:#b34343!important}@media(max-width:850px){aside{width:64px;padding:18px 9px}.brand span:not(.brandmark),.workspace div,nav button:not(.active)::after,.safety span{display:none}.workspace{margin:30px 7px}.safety{padding:10px;justify-content:center}nav button{padding:12px;justify-content:center}main{margin-left:64px;width:calc(100% - 64px);padding:25px}.cards{grid-template-columns:repeat(2,1fr)}.two-col,.studio,.settings-grid{grid-template-columns:1fr}.settings-grid .full{grid-column:auto}}@media(max-width:580px){main{padding:18px}header{align-items:flex-start}.header-actions .primary{font-size:0;padding:10px}.hero{padding:25px}.hero-orb{display:none}.cards{gap:9px}.metric{padding:14px}.page-top{align-items:flex-start}.page-top .primary{white-space:nowrap}.campaign{align-items:flex-start;flex-direction:column}.campaign>div:last-child{width:100%}.campaign button{margin-left:0!important;margin-right:7px}.inline-form{align-items:stretch;flex-direction:column}}
+
+/* Services Catalog */
+.service-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 18px;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.service-card {
+  border: 1px solid #e5e9e5;
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.service-image {
+  display: block;
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  background: #e5ece7;
+}
+
+.service-placeholder {
+  display: grid;
+  place-items: center;
+  color: #47716a;
+}
+
+.service-card-body {
+  padding: 15px;
+}
+
+.service-card-top,
+.service-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.service-card h3 {
+  margin: 15px 0 8px;
+}
+
+.service-card p {
+  color: #68766f;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.service-price {
+  display: block;
+  margin: 12px 0 6px;
+}
+
+.service-card-body > small {
+  display: block;
+  color: #76817d;
+  margin-bottom: 15px;
+}
+
+.service-actions {
+  justify-content: flex-start;
+}
+
+.service-actions button {
+  font-size: 11px;
+  padding: 8px;
+}
+
+@media (max-width: 1100px) {
+  .service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 580px) {
+  .service-form-grid,
+  .service-grid {
+    grid-template-columns: 1fr;
+  }
+}
